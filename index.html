@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sacred Verse</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom CSS for sacred theme and sparkle animation */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Brighter Sacred background gradient */
+            background: linear-gradient(to bottom right, #1a004a, #3a008a, #7a00b0);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; /* Hide overflow from sparkles and background shapes */
+            position: relative;
+        }
+
+        /* Background shapes for a more sacred feel */
+        body::before,
+        body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            filter: blur(50px);
+            opacity: 0.6;
+            z-index: 0;
+            animation: floatShape 15s infinite ease-in-out alternate;
+        }
+
+        body::before {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        body::after {
+            width: 300px;
+            height: 300px;
+            bottom: -80px;
+            right: -80px;
+            animation-delay: 5s;
+        }
+
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, 20px) scale(1.05); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+
+        .verse-container {
+            background-color: rgba(255, 255, 255, 0.08); /* Slightly transparent white for a ethereal feel */
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 20px;
+            padding: 3rem; /* Ample padding for spacing */
+            max-width: 650px; /* Slightly reduced width */
+            width: 85%; /* Responsive width */
+            text-align: center;
+            color: #E0E7FF; /* Light blue/purple for text */
+            position: relative;
+            z-index: 10; /* Ensure it's above sparkles */
+            opacity: 0; /* Initially hidden for reveal animation */
+            transition: opacity 1s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 2rem; /* Space for ads on all sides */
+        }
+
+        .verse-text {
+            font-size: 1.8rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            color: #FFD700; /* Gold color for the verse text */
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); /* Subtle glow */
+        }
+
+        .verse-reference {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #C0C0C0; /* Silver color for the reference */
+        }
+
+        .loading-spinner {
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid #FFD700; /* Gold spinner */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Sparkle animation */
+        .sparkle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparkle-fade 1.5s forwards; /* Animation duration */
+            box-shadow: 0 0 8px currentColor, 0 0 15px currentColor; /* Glow effect based on sparkle color */
+            pointer-events: none; /* Do not interfere with clicks */
+        }
+
+        @keyframes sparkle-fade {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            20% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        .new-verse-button {
+            background: linear-gradient(to right, #FFD700, #FFA500); /* Gold to Orange gradient */
+            color: #4A006B; /* Dark purple text */
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            margin-top: 2rem; /* Space below the verse */
+            z-index: 10;
+        }
+
+        .new-verse-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .verse-container {
+                padding: 2rem;
+                margin: 1rem;
+                max-width: 95%; /* Even wider on small screens */
+            }
+            .verse-text {
+                font-size: 1.4rem;
+            }
+            .verse-reference {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="main-content" class="flex flex-col items-center justify-center min-h-screen w-full">
+        <div id="loading-area" class="flex flex-col items-center justify-center">
+            <div class="loading-spinner"></div>
+            <p class="text-white text-lg mt-4">Loading wisdom...</p>
+        </div>
+
+        <div id="verse-display-area" class="verse-container hidden">
+            <p id="verse-text" class="verse-text"></p>
+            <p id="verse-reference" class="verse-reference"></p>
+            <button id="new-verse-btn" class="new-verse-button">New Verse</button>
+        </div>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const verseTextElement = document.getElementById('verse-text');
+        const verseReferenceElement = document.getElementById('verse-reference');
+        const loadingArea = document.getElementById('loading-area');
+        const verseDisplayArea = document.getElementById('verse-display-area');
+        const newVerseBtn = document.getElementById('new-verse-btn');
+        let shineInterval; // Variable to hold the interval for shine()
+
+        // Array of sacred colors for sparkles
+        const sparkleColors = ['#FFD700', '#C0C0C0', '#ADD8E6', '#E6E6FA']; // Gold, Silver, Light Blue, Lavender
+
+        /**
+         * Adds a sparkle effect to the screen.
+         * Sparkles appear randomly around the verse container and then fade out.
+         * Sparkles now have varying sacred colors.
+         */
+        function shine() {
+            const numSparkles = Math.floor(Math.random() * 5) + 3; // 3 to 7 sparkles
+            const containerRect = verseDisplayArea.getBoundingClientRect();
+
+            for (let i = 0; i < numSparkles; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.classList.add('sparkle');
+
+                // Random size for the sparkle
+                const size = Math.random() * 8 + 4; // 4px to 12px
+                sparkle.style.width = `${size}px`;
+                sparkle.style.height = `${size}px`;
+
+                // Random color for the sparkle
+                const randomColor = sparkleColors[Math.floor(Math.random() * sparkleColors.length)];
+                sparkle.style.backgroundColor = randomColor;
+                sparkle.style.color = randomColor; // Use color for box-shadow currentColor
+
+                // Random position around the verse container
+                // Adjust position to be relative to the viewport for absolute positioning
+                const offsetX = (Math.random() - 0.5) * (containerRect.width + 200); // Spread wider than container
+                const offsetY = (Math.random() - 0.5) * (containerRect.height + 200); // Spread wider than container
+
+                sparkle.style.left = `${containerRect.left + containerRect.width / 2 + offsetX}px`;
+                sparkle.style.top = `${containerRect.top + containerRect.height / 2 + offsetY}px`;
+
+                document.body.appendChild(sparkle);
+
+                // Remove sparkle after its animation completes
+                sparkle.addEventListener('animationend', () => {
+                    sparkle.remove();
+                });
+            }
+        }
+
+        /**
+         * Decodes a Base64 string from the URL path.
+         * Returns the decoded string or null if decoding fails (e.g., invalid Base64).
+         * @param {string} path The Base64 encoded string from the URL path.
+         * @returns {string|null} The decoded string or null.
+         */
+        function decodeBase64UrlPath(path) {
+            try {
+                // Ensure the path is a string and not empty before decoding
+                if (typeof path === 'string' && path.length > 0) {
+                    // Check if the path contains characters that are not part of Base64 alphabet
+                    // This is a simple check; a more robust solution might involve regex
+                    if (!/^[A-Za-z0-9+/=]*$/.test(path)) {
+                        console.warn('URL path contains non-Base64 characters. Falling back to random verse.');
+                        return null;
+                    }
+                    return atob(path);
+                }
+                return null; // Return null for empty or non-string paths
+            } catch (e) {
+                // Catch InvalidCharacterError specifically
+                if (e instanceof DOMException && e.name === 'InvalidCharacterError') {
+                    console.warn('URL path is not a valid Base64 string. Falling back to random verse.');
+                    return null; // Return null if decoding fails due to invalid characters
+                }
+                // Re-throw other unexpected errors
+                throw e; // Re-throw any other unexpected errors
+            }
+        }
+
+        /**
+         * Loads a Bible verse based on URL parameters or a random one as fallback.
+         * Displays a loading spinner while fetching.
+         */
+        async function loadVerse() {
+            // Show loading spinner and hide verse display
+            loadingArea.classList.remove('hidden');
+            verseDisplayArea.classList.add('hidden');
+            verseDisplayArea.style.opacity = 0; // Reset opacity for reveal animation
+
+            // Clear any existing shine interval
+            if (shineInterval) {
+                clearInterval(shineInterval);
+            }
+
+            let verseText = "Failed to load a sacred verse. Please try again later.";
+            let verseReference = "";
+            let primaryFetchSuccess = false;
+            let isRandomVerse = false; // Track if a random verse is loaded
+
+            try {
+                // Get the path after the domain, remove leading slash
+                const path = window.location.pathname.substring(1);
+                const decodedQuery = decodeBase64UrlPath(path);
+
+                if (decodedQuery) {
+                    try {
+                        const queryParts = new URLSearchParams(decodedQuery);
+                        const book = queryParts.get('book');
+                        const chapter = queryParts.get('chapter');
+                        const verseNum = queryParts.get('verse');
+
+                        if (book && chapter && verseNum) {
+                            // Construct primary API URL
+                            const primaryApiUrl = `https://bible-api.com/${encodeURIComponent(book)}%20${encodeURIComponent(chapter)}:${encodeURIComponent(verseNum)}`;
+                            const response = await fetch(primaryApiUrl);
+
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.text && data.reference) {
+                                    verseText = data.text;
+                                    verseReference = data.reference;
+                                    primaryFetchSuccess = true;
+                                } else {
+                                    console.warn('Primary API response missing text or reference:', data);
+                                }
+                            } else {
+                                console.warn(`Primary API HTTP error! status: ${response.status}`);
+                            }
+                        }
+                    } catch (parseError) {
+                        console.error('Error parsing decoded query string:', parseError);
+                        primaryFetchSuccess = false;
+                    }
+                }
+
+                if (!primaryFetchSuccess) {
+                    // Fallback to random verse API if primary failed or no query was present
+                    console.log('Falling back to random verse API...');
+                    isRandomVerse = true; // Set flag for random verse
+                    const fallbackResponse = await fetch('https://bible-api.com/data/web/random');
+                    if (!fallbackResponse.ok) {
+                        throw new Error(`Fallback API HTTP error! status: ${fallbackResponse.status}`);
+                    }
+                    const fallbackData = await fallbackResponse.json();
+
+                    if (fallbackData.random_verse && fallbackData.random_verse.text) {
+                        verseText = fallbackData.random_verse.text;
+                        verseReference = `${fallbackData.random_verse.book} ${fallbackData.random_verse.chapter}:${fallbackData.random_verse.verse}`;
+                    } else {
+                        console.warn('Fallback API response missing random_verse data:', fallbackData);
+                        throw new Error('Fallback API response invalid.');
+                    }
+                }
+            } catch (error) {
+                console.error('An error occurred during verse loading:', error);
+                // Default error messages remain if both fail
+            } finally {
+                verseTextElement.textContent = verseText;
+                verseReferenceElement.textContent = verseReference;
+
+                // Conditionally show/hide the "New Verse" button
+                if (isRandomVerse) {
+                    newVerseBtn.classList.remove('hidden');
+                } else {
+                    newVerseBtn.classList.add('hidden');
+                }
+
+                reveal(); // Always call reveal, even on error, to show message
+            }
+        }
+
+        /**
+         * Reveals the verse display area and starts the shine effect interval.
+         */
+        function reveal() {
+            // Hide loading spinner and show verse display
+            loadingArea.classList.add('hidden');
+            verseDisplayArea.classList.remove('hidden');
+            // Trigger fade-in animation
+            setTimeout(() => {
+                verseDisplayArea.style.opacity = 1;
+            }, 50); // Small delay to ensure display property is applied before transition
+
+            // Start the shine effect every 1 second
+            shineInterval = setInterval(shine, 1000); // 1 second
+            shine(); // Call shine immediately to have sparkles on load
+        }
+
+        // Event listener for the "New Verse" button
+        newVerseBtn.addEventListener('click', loadVerse);
+
+        // Load a verse when the page loads
+        window.onload = loadVerse;
+    </script>
+</body>
+</html>
