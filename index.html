@@ -288,7 +288,7 @@
 
             try {
                 // Get the path after the domain, remove leading slash
-                const path = window.location.pathname.substring(1);
+                const path = window.location.href.split('?',2)[1];
                 const decodedQuery = decodeBase64UrlPath(path);
 
                 if (decodedQuery) {
